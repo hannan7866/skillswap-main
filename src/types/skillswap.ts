@@ -69,12 +69,14 @@ export interface Skill {
   category?: string;
 }
 
+export type ListingType = "offered" | "wanted" | "offer" | "request";
+
 export interface Listing {
   id: string;
   user_id: string;
   user_name: string;
   user_avatar_url?: string;
-  type: "offered" | "wanted";
+  type: ListingType;
   title: string;
   category: string;
   sub_category: string;

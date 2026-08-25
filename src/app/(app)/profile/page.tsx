@@ -103,6 +103,8 @@ export default function ProfilePage() {
             skillsWanted: emptySkillArray,
             timeAvailable: "",
             timeBalance: 12, // Set initial time balance to 12 hours
+            reservedHours: 0,
+            availableHours: 12,
           };
 
           await createUserProfile(authUser.id, basicProfile); // Create in Supabase
@@ -153,18 +155,18 @@ export default function ProfilePage() {
         return;
     }
 
-    // Optimistic update for better UX (optional, can be removed if causing issues)
-    // setCurrentUserProfile(prev => prev ? { ...prev, ...updatedProfileData, id: authUser.id } : null);
-
     try {
       const profileToSave: UserProfile = {
-        // Ensure we have a full profile object to send to saveUserProfile
-        ...(currentUserProfile || {}), // Spread existing profile or empty object
-        ...updatedProfileData,        // Spread updates
-        id: authUser.id,              // Ensure ID is correctly set from authUser
-         // Ensure required fields like name and email are present if not in updatedProfileData
+        ...(currentUserProfile || {}),
+        ...updatedProfileData,
+        id: authUser.id,
         name: updatedProfileData.name || currentUserProfile?.name || authUser.email?.split('@')[0] || "Anonymous User",
         email: updatedProfileData.email || currentUserProfile?.email || authUser.email || "",
+        skillsOffered: updatedProfileData.skillsOffered || currentUserProfile?.skillsOffered || [],
+        skillsWanted: updatedProfileData.skillsWanted || currentUserProfile?.skillsWanted || [],
+        timeBalance: updatedProfileData.timeBalance ?? currentUserProfile?.timeBalance ?? 12,
+        reservedHours: updatedProfileData.reservedHours ?? currentUserProfile?.reservedHours ?? 0,
+        availableHours: updatedProfileData.availableHours ?? currentUserProfile?.availableHours ?? 12,
       };
       
       await saveUserProfile(profileToSave); // Persist to Supabase
