@@ -6,7 +6,9 @@ export async function createClient() {
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://snndqegmitwhziokpbxr.supabase.co',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+      'sb_publishable_VRkHRPAIqE_P_dXk53vaEQ_ZK6uaxw_',
     {
       cookies: {
         getAll() {
