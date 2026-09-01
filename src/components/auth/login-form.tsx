@@ -45,18 +45,24 @@ export function LoginForm() {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: values.email,
+        email: values.email.trim(),
         password: values.password,
       });
 
       if (error) {
         console.error("Supabase login error:", error);
         let errorMessage = "Invalid email or password. Please try again.";
+        
         if (error.message.includes("Invalid login credentials")) {
-             errorMessage = "Invalid email or password. Please try again.";
-        } else if (error.message.includes("Email not confirmed")) {
-            errorMessage = "Please confirm your email address before logging in.";
+          errorMessage = "Invalid email or password. Please verify your credentials or register a new account.";
+        } else if (error.message.includes("Email not confirmed") || (error as any).code === "email_not_confirmed") {
+          errorMessage = "Your email is not confirmed yet. Please check your inbox for the confirmation email, or disable 'Confirm email' in your Supabase Dashboard.";
+        } else if (error.message.includes("rate limit") || (error as any).status === 429) {
+          errorMessage = "Too many attempts. Please wait a few moments before trying again.";
+        } else if (error.message) {
+          errorMessage = error.message;
         }
+
         toast({
           title: "Login Failed",
           description: errorMessage,
@@ -68,8 +74,8 @@ export function LoginForm() {
       
       if (data.user) {
         toast({
-          title: "Login Successful",
-          description: "Welcome back!",
+          title: "Welcome Back!",
+          description: "Signing in to your SkillSwap dashboard...",
         });
         router.push('/dashboard');
         router.refresh();
@@ -85,13 +91,14 @@ export function LoginForm() {
       console.error("Login error:", error);
       toast({
         title: "Login Failed",
-        description: "An unexpected error occurred during login.",
+        description: error.message || "An unexpected error occurred during login.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
   }
+
 
   return (
     <Card className="shadow-xl">

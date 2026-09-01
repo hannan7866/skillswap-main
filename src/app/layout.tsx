@@ -1,24 +1,25 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google'; // Using Inter as a fallback, Geist is primary
-import { Geist_Mono, Geist } from 'next/font/google';
+import { Plus_Jakarta_Sans, Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const plusJakartaSans = Plus_Jakarta_Sans({
+  variable: '--font-heading',
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const inter = Inter({
+  variable: '--font-sans',
   subsets: ['latin'],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: 'SkillSwap - Share Skills, Bank Time',
-  description: 'A platform to exchange skills and manage your time bank.',
+  title: 'SkillSwap - Exchange Skills, Bank Pure Time',
+  description: 'A future-forward peer-to-peer platform to exchange skills and manage your cashless time bank.',
 };
 
 export default function RootLayout({
@@ -27,8 +28,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <body
+        className={`${inter.variable} ${plusJakartaSans.variable} font-sans antialiased bg-background text-foreground min-h-screen selection:bg-primary/25 selection:text-primary`}
+        suppressHydrationWarning
+      >
         <ThemeProvider>
           {children}
           <Toaster />
@@ -37,3 +41,4 @@ export default function RootLayout({
     </html>
   );
 }
+

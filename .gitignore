@@ -43,3 +43,6 @@ next-env.d.ts
 
 # OS
 Desktop.ini
+
+# Output dumps
+repomix-output.xml

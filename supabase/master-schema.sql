@@ -21,6 +21,49 @@ CREATE TABLE IF NOT EXISTS profiles (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Trigger to automatically create a profile for new users upon signup
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO public.profiles (id, name, email, time_balance, reserved_hours)
+    VALUES (
+        NEW.id,
+        COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', split_part(NEW.email, '@', 1)),
+        NEW.email,
+        12.00,
+        0.00
+    )
+    ON CONFLICT (id) DO UPDATE
+    SET
+        name = COALESCE(EXCLUDED.name, profiles.name),
+        email = COALESCE(EXCLUDED.email, profiles.email),
+        updated_at = NOW();
+
+    -- Also record welcome grant in time_ledger
+    INSERT INTO public.time_ledger (user_id, amount, entry_type, balance_after, reserved_after, description)
+    VALUES (
+        NEW.id,
+        12.00,
+        'initial_grant',
+        12.00,
+        0.00,
+        'Welcome grant: 12 starting Time Bank hours'
+    )
+    ON CONFLICT DO NOTHING;
+
+    RETURN NEW;
+EXCEPTION WHEN OTHERS THEN
+    -- Prevent signup failure if ledger or secondary table fails
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+    AFTER INSERT ON auth.users
+    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+
 -- 3. Skills Table (User Profile Skills)
 CREATE TABLE IF NOT EXISTS skills (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,

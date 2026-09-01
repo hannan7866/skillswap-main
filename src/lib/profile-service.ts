@@ -72,27 +72,57 @@ export async function fetchUserProfile(userId: string): Promise<UserProfile | nu
       .single();
     
     if (profileError) {
-      // Check if it's the specific error for "0 rows" with .single()
-      if (profileError.code === 'PGRST116' && profileError.details?.includes("0 rows")) {
-        console.log("No profile found for user:", userId);
-        return null; // Profile not found, return null gracefully
-      }
       if (profileError.code === 'PGRST303') {
         console.warn("Supabase JWT issued in future (PGRST303). Clearing stale authentication session...");
         await supabase.auth.signOut();
         return null;
       }
+      
+      // If 0 rows or profile doesn't exist, auto-create it from auth metadata
+      if (profileError.code === 'PGRST116' || profileError.details?.includes("0 rows")) {
+        console.log("Profile not found in table. Auto-initializing profile for:", userId);
+        const { data: authData } = await supabase.auth.getUser();
+        const authUser = authData?.user;
+        
+        if (authUser && authUser.id === userId) {
+          const defaultName = authUser.user_metadata?.full_name || authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'Community Member';
+          const defaultEmail = authUser.email || '';
+          
+          await supabase.from('profiles').upsert({
+            id: userId,
+            name: defaultName,
+            email: defaultEmail,
+            time_balance: 12.00,
+            reserved_hours: 0.00,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'id' });
+
+          return {
+            id: userId,
+            name: defaultName,
+            email: defaultEmail,
+            bio: '',
+            skillsOffered: [],
+            skillsWanted: [],
+            timeAvailable: '',
+            timeBalance: 12.00,
+            reservedHours: 0.00,
+            availableHours: 12.00,
+          };
+        }
+        return null;
+      }
+      
       console.error('Supabase error fetching profile:', JSON.stringify(profileError, null, 2));
       throw new Error(`Error fetching profile data: ${profileError.message}`);
     }
     
-    // If profileData is null but no error, it means 0 rows were returned
+    // If profileData is null but no error
     if (!profileData) {
       console.log("No profile data returned for user:", userId);
       return null;
     }
-    
-    console.log("Profile data from database:", profileData);
     
     // Get the skills
     const { data: skillsData, error: skillsError } = await supabase
@@ -102,7 +132,6 @@ export async function fetchUserProfile(userId: string): Promise<UserProfile | nu
     
     if (skillsError) {
       console.error('Supabase error fetching skills:', JSON.stringify(skillsError, null, 2));
-      throw new Error(`Error fetching skills data: ${skillsError.message}`);
     }
     
     // Helper to derive category from taxonomy lookup
@@ -141,7 +170,6 @@ export async function fetchUserProfile(userId: string): Promise<UserProfile | nu
       availableHours,
     };
     
-    console.log("Returning user profile with balance:", timeBalance, "reserved:", reservedHours, "available:", availableHours);
     return userProfile;
   } catch (error: any) {
     const errorMessage = error.message || 'Unknown error during profile fetch';
@@ -149,6 +177,7 @@ export async function fetchUserProfile(userId: string): Promise<UserProfile | nu
     throw new Error(errorMessage);
   }
 }
+
 
 export async function saveUserProfile(profile: Partial<UserProfile> & { id: string }): Promise<void> {
   try {

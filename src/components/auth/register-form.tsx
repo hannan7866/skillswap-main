@@ -53,25 +53,29 @@ export function RegisterForm() {
     try {
       // Register with Supabase Auth
       const { data, error } = await supabase.auth.signUp({
-        email: values.email,
+        email: values.email.trim(),
         password: values.password,
         options: {
           data: {
-            full_name: values.name,
+            full_name: values.name.trim(),
           }
         }
       });
 
       if (error) {
         console.error("Supabase registration error:", error);
-        let errorMessage = "An unexpected error occurred during registration.";
-        if (error.message.includes("User already registered")) {
-          errorMessage = "This email is already registered. Please login or use a different email.";
+        let errorMessage = error.message || "An unexpected error occurred during registration.";
+        
+        if (error.message.includes("rate limit") || error.code === "over_email_send_rate_limit" || (error as any).status === 429) {
+          errorMessage = "Supabase Email Rate Limit reached. Please disable 'Confirm email' in your Supabase Dashboard under Authentication -> Providers -> Email, or try again in a few minutes.";
+        } else if (error.message.includes("invalid") || error.code === "email_address_invalid" || error.message.includes("Unable to validate email")) {
+          errorMessage = "The email address appears invalid. Please use a standard email provider like Gmail or Outlook.";
+        } else if (error.message.includes("User already registered") || error.message.includes("already registered")) {
+          errorMessage = "This email is already registered. Please log in instead.";
         } else if (error.message.includes("Password should be at least 6 characters")) {
-          errorMessage = "The password is too weak. Please choose a stronger password (at least 6 characters).";
-        } else if (error.message.includes("Unable to validate email address")) {
-            errorMessage = "The email address is not valid.";
+          errorMessage = "The password is too weak. Please choose a password with at least 6 characters.";
         }
+
         toast({
           title: "Registration Failed",
           description: errorMessage,
@@ -82,40 +86,55 @@ export function RegisterForm() {
       }
 
       if (data.user) {
-          if (data.session) {
-            toast({
-                title: "Registration Successful",
-                description: "Your account has been created.",
-            });
-            router.push('/dashboard');
-            router.refresh();
-          } else {
-            toast({
-                title: "Registration Successful",
-                description: "Account created. Please check your email to confirm your registration.",
-                duration: 10000,
-            });
-            router.push('/login');
-          }
+        // Attempt to ensure profile row exists immediately
+        try {
+          await supabase.from("profiles").upsert({
+            id: data.user.id,
+            name: values.name.trim(),
+            email: values.email.trim(),
+            time_balance: 12.00,
+            reserved_hours: 0.00,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }, { onConflict: "id" });
+        } catch (profileErr) {
+          console.warn("Could not insert initial profile record:", profileErr);
+        }
+
+        if (data.session) {
+          toast({
+            title: "Welcome to SkillSwap!",
+            description: "Your account is ready with 12 Time Bank hours.",
+          });
+          router.push("/dashboard");
+          router.refresh();
+        } else {
+          toast({
+            title: "Account Created!",
+            description: "Please check your email inbox to confirm your account, or disable 'Confirm email' in Supabase to log in immediately.",
+            duration: 9000,
+          });
+          router.push("/login");
+        }
       } else {
         toast({
-          title: "Registration Failed",
-          description: "An unexpected error occurred. Please try again.",
+          title: "Registration Incomplete",
+          description: "Could not create user account. Please check your Supabase configuration.",
           variant: "destructive",
         });
       }
-
     } catch (error: any) {
       console.error("Registration error:", error);
       toast({
-        title: "Registration Failed",
-        description: "An unexpected error occurred during registration.",
+        title: "Registration Error",
+        description: error.message || "An unexpected error occurred during registration.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
   }
+
 
   return (
     <Card className="shadow-xl">

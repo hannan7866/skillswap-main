@@ -3,96 +3,60 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 210 20% 98%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 174 86% 34%; /* Vibrant Emerald/Teal */
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 210 25% 94%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 20% 94%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 43 96% 56%; /* Warm Gold */
-    --accent-foreground: 24 9.8% 10%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 174 86% 34%;
-
-    --radius: 0.75rem;
-
-    --chart-1: 174 86% 34%;
-    --chart-2: 199 89% 48%;
-    --chart-3: 43 96% 56%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
+  :root,
   .dark {
-    --background: 224 71% 4%; /* Deep obsidian/slate-950 */
-    --foreground: 210 40% 98%;
+    /* Antigravity Deep Space Palette */
+    /* Void Black (#0A0A0B) */
+    --background: 240 5% 4.1%;
+    /* Starlight / Light Silver Foreground */
+    --foreground: 46 30% 92%;
 
-    --card: 224 71% 7%;
-    --card-foreground: 210 40% 98%;
+    /* Dark Space Panels */
+    --card: 240 6% 7%;
+    --card-foreground: 46 30% 92%;
 
-    --popover: 224 71% 6%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 240 6% 6.5%;
+    --popover-foreground: 46 30% 92%;
 
-    --primary: 173 80% 40%; /* Bright glowing teal */
-    --primary-foreground: 224 71% 4%;
+    /* Vibrant Cyan (#2BBBD7) - Primary Brand & Glow */
+    --primary: 190 67% 51%;
+    --primary-foreground: 240 5% 4.1%;
 
-    --secondary: 222 47% 13%;
-    --secondary-foreground: 210 40% 98%;
+    /* Ocean Teal (#218DAE) - Secondary Accent & Hover States */
+    --secondary: 194 68% 41%;
+    --secondary-foreground: 46 94% 95%;
 
-    --muted: 222 47% 12%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 240 5% 14%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 43 96% 56%; /* Gold */
-    --accent-foreground: 224 71% 4%;
+    /* Solar Gold (#FFD758) - High-Energy Accent & Warning */
+    --accent: 46 100% 67%;
+    --accent-foreground: 240 5% 4.1%;
 
-    --destructive: 0 62.8% 50.6%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 16.5%;
-    --input: 217.2 32.6% 16.5%;
-    --ring: 173 80% 40%;
-    
-    --chart-1: 173 80% 45%;
-    --chart-2: 199 89% 48%;
-    --chart-3: 43 96% 56%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    /* Starlight Cream & Muted Border Chrome */
+    --border: 215 20% 18%;
+    --input: 215 20% 18%;
+    --ring: 190 67% 51%;
 
-    --sidebar-background: 224 71% 6%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 173 80% 40%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 222 47% 12%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 217.2 32.6% 16.5%;
-    --sidebar-ring: 173 80% 40%;
+    --radius: 0.875rem;
+
+    --chart-1: 190 67% 51%;
+    --chart-2: 194 68% 41%;
+    --chart-3: 46 100% 67%;
+    --chart-4: 46 94% 80%;
+    --chart-5: 340 85% 60%;
+
+    --sidebar-background: 240 6% 5.5%;
+    --sidebar-foreground: 46 30% 92%;
+    --sidebar-primary: 190 67% 51%;
+    --sidebar-primary-foreground: 240 5% 4.1%;
+    --sidebar-accent: 240 5% 12%;
+    --sidebar-accent-foreground: 46 30% 92%;
+    --sidebar-border: 215 20% 18%;
+    --sidebar-ring: 190 67% 51%;
   }
 }
 
@@ -105,55 +69,114 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     overflow-x: hidden;
   }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading), sans-serif;
+    letter-spacing: -0.025em;
+  }
 }
 
-/* Custom visual utilities */
+/* =========================================================================
+   Antigravity Custom Utilities with Warm-Toned Glowing Accents
+   ========================================================================= */
+
+/* Floating Glass with Starlight Cream Border & Soft Vibrant Cyan Drop Shadow */
+.glass-float {
+  background: rgba(10, 10, 11, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(252, 229, 154, 0.16);
+  box-shadow: 0 12px 35px -8px rgba(43, 187, 215, 0.22), 0 0 1px 1px rgba(252, 229, 154, 0.08);
+}
+
 .glass-panel {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(17, 17, 20, 0.78);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(252, 229, 154, 0.12);
 }
 
-.dark .glass-panel {
-  background: rgba(13, 22, 38, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* Vibrant Glowing Text Utilities */
+.text-glow {
+  text-shadow: 0 0 16px rgba(43, 187, 215, 0.65), 0 0 32px rgba(43, 187, 215, 0.35);
 }
 
-.mesh-glow {
-  background: radial-gradient(circle at 50% 0%, rgba(20, 184, 166, 0.18) 0%, rgba(56, 189, 248, 0.1) 45%, transparent 70%);
+.text-glow-gold {
+  text-shadow: 0 0 16px rgba(255, 215, 88, 0.7), 0 0 32px rgba(255, 215, 88, 0.35);
 }
 
-.dark .mesh-glow {
-  background: radial-gradient(circle at 50% 0%, rgba(20, 184, 166, 0.22) 0%, rgba(14, 165, 233, 0.12) 45%, transparent 70%);
+.text-glow-ocean {
+  text-shadow: 0 0 16px rgba(33, 141, 174, 0.7), 0 0 32px rgba(33, 141, 174, 0.35);
 }
 
+/* Glowing Border Utilities */
+.border-glow-cyan {
+  box-shadow: 0 0 15px rgba(43, 187, 215, 0.35), inset 0 0 15px rgba(43, 187, 215, 0.12);
+  border-color: rgba(43, 187, 215, 0.6);
+}
+
+.border-glow-gold {
+  box-shadow: 0 0 15px rgba(255, 215, 88, 0.35), inset 0 0 15px rgba(255, 215, 88, 0.12);
+  border-color: rgba(255, 215, 88, 0.6);
+}
+
+/* Smooth Cyan-to-Solar Gold Gradient Text */
 .gradient-text {
-  background: linear-gradient(135deg, #14b8a6 0%, #38bdf8 50%, #22c55e 100%);
+  background: linear-gradient(135deg, #2BBBD7 0%, #218DAE 45%, #FFD758 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .gradient-text-gold {
-  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #fcd34d 100%);
+  background: linear-gradient(135deg, #FFD758 0%, #FCE59A 50%, #2BBBD7 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
+.gradient-text-cyan {
+  background: linear-gradient(135deg, #2BBBD7 0%, #218DAE 60%, #FCE59A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* =========================================================================
+   Floating & Pulsing Animations
+   ========================================================================= */
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float 9s ease-in-out infinite;
+}
+
+.animate-float-fast {
+  animation: float 4s ease-in-out infinite;
+}
+
 @keyframes pulse-glow {
   0%, 100% {
-    opacity: 0.4;
+    opacity: 0.45;
     transform: scale(1);
   }
   50% {
-    opacity: 0.8;
-    transform: scale(1.05);
+    opacity: 0.85;
+    transform: scale(1.04);
   }
 }
 
 .animate-pulse-glow {
-  animation: pulse-glow 6s ease-in-out infinite;
+  animation: pulse-glow 5s ease-in-out infinite;
 }
+
+
 
